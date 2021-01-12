@@ -1,0 +1,36 @@
+name: Security check - Bandit
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: [ '2.7.17', '3.6.10' ]
+    name: Python ${{ matrix.python-version }} ${{ matrix.os }} 
+
+    steps:
+    - uses: actions/checkout@v2
+
+   - name: python-bandit with code annotations
+     # You may pin to the exact commit or the version.
+     # uses: ioggstream/bandit-report-artifacts@d706d74be4004d4300a56feca4b6ca98d70211ac
+     uses: ioggstream/bandit-report-artifacts@v0.0.2
+     with:
+        # This is the path at which the your python project is located in you github repo.
+        project_path: # optional, default is .
+        # This is to ignore the security failures and pass the check.
+        ignore_failure: # optional
+        # The yaml config file to use
+        config_file: # optional, default is 
+        # The GitHub App installation access token. [Learn more about `GITHUB_TOKEN`](https://help.github.com/en/actions/configuring-and-managing-workflows/authenticating-with-the-github_token#about-the-github_token-secret)
+        repo_token: # default is ${{ github.token }}
+
+    - name: Security check report artifacts
+      uses: actions/upload-artifact@v1
+      # if: failure()
+      with:
+        name: Security report
+        path: output/security_report.txt
